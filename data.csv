@@ -1,0 +1,71 @@
+Job Role,Required Degree,Core Skills,Software Tools,Experience Level,Industry Sector,Future Demand Level,Automation Risk,Future Upgrade Skills,Expected , Salary (INR/month)
+EV Design Engineer,B.E Mechanical,CAD,Thermal Analysis,ANSYS,Entry,EV Design,High,Low,AI Design Tools,40000
+Battery Engineer,B.E Electrical,Battery Tech,BMS,MATLAB,Entry,Battery,Very High,Low,AI Battery Analytics,50000
+Embedded Engineer,B.E ECE,C Programming,Microcontrollers,Keil,Entry,Automation,High,Medium,Edge AI,45000
+EV Technician,Diploma Electrical,Repair,Diagnostics,Basic Tools,Entry,Service,High,Low,Advanced Diagnostics,30000
+Autonomous Engineer,B.Tech AI,ML,Computer Vision,TensorFlow,Senior,Autonomous,Very High,Low,Deep Learning,90000
+Robotics Engineer,B.E Mechatronics,PLC,Sensors,ROS,Mid,Automation,High,Medium,AI Robotics,70000
+Data Analyst,B.Sc Data Science,Python,SQL,Power BI,Entry,Analytics,High,Low,AI Analytics,50000
+Charging Engineer,B.E Electrical,Power Systems,Grid,MATLAB,Mid,Infrastructure,Very High,Low,Smart Grid,65000
+IoT Engineer,B.E CSE,IoT,Cloud,AWS,Mid,Connected EV,High,Medium,Edge Computing,65000
+Production Engineer,B.E Mechanical,Manufacturing,Lean,SAP,Mid,Manufacturing,High,Medium,Industry 4.0,60000
+AI Engineer,B.Tech AI,Deep Learning,NN,TensorFlow,Senior,AI EV,Very High,Low,Advanced AI,95000
+Quality Engineer,B.E Mechanical,Inspection,SPC,Tools,Mid,Manufacturing,Medium,Medium,AI QC,55000
+Supply Chain Analyst,MBA,Logistics,Excel,SAP,Mid,Supply Chain,High,Medium,AI Forecasting,60000
+Software Developer,B.Tech CSE,C++,Python,VS Code,Mid,Software,Very High,Low,Autonomous Systems,80000
+Energy Specialist,M.Tech Energy,Storage,Simulation,MATLAB,Senior,Energy,Very High,Low,Next Gen Battery,90000
+Motor Design Engineer,B.E Electrical,Motor Design,Simulation,ANSYS,Mid,EV Motors,High,Low,AI Simulation,65000
+Vehicle Integration Engineer,B.E Mechanical,System Integration,Testing,Simulink,Mid,EV Systems,High,Medium,Digital Twin,70000
+Control Systems Engineer,B.E EEE,Control Theory,PID,MATLAB,Mid,Automation,High,Low,AI Control,75000
+Thermal Engineer,B.E Mechanical,Thermal Mgmt,Heat Transfer,ANSYS,Mid,EV Design,High,Low,AI Thermal Models,70000
+Firmware Engineer,B.E ECE,Firmware,C,Keil,Mid,Embedded,High,Medium,Secure Firmware,65000
+Cybersecurity Engineer,B.Tech CSE,Security,Networking,Kali Linux,Mid,EV Security,Very High,Low,AI Security,85000
+Cloud Engineer,B.Tech IT,Cloud,DevOps,AWS,Mid,Connected EV,High,Medium,AI Cloud,75000
+UI UX Designer,B.Des,Design,Prototyping,Figma,Entry,Software,Medium,Low,AI UX,50000
+Test Engineer,B.E Mechanical,Testing,Validation,LabVIEW,Entry,QA,Medium,Medium,Automation Testing,45000
+Field Service Engineer,Diploma,Maintenance,Repair,Tools,Entry,Service,High,Low,Remote Monitoring,35000
+EV Sales Engineer,MBA,Sales,Communication,CRM,Entry,Sales,High,Medium,AI Sales,50000
+Battery Researcher,M.Tech,Research,Electrochemistry,Lab Tools,Senior,R&D,Very High,Low,Next Gen Battery,100000
+AI Data Scientist,B.Tech AI,ML,Big Data,Python,Senior,AI,Very High,Low,Advanced AI,110000
+Simulation Engineer,B.E Mechanical,Simulation,Modeling,ANSYS,Mid,Design,High,Low,AI Simulation,70000
+Grid Integration Engineer,B.E Electrical,Grid,Power Flow,ETAP,Mid,Energy,Very High,Low,Smart Grid,80000
+EV Policy Analyst,MBA,Policy,Research,Excel,Mid,Government,High,Low,AI Policy,70000
+Mechanical Engineer,B.E Mechanical,Design,Manufacturing,AutoCAD,Entry,General,Medium,Medium,Automation,45000
+Electrical Engineer,B.E Electrical,Circuits,Power Systems,MATLAB,Entry,General,Medium,Medium,Smart Systems,45000
+Automation Engineer,B.E Mechatronics,PLC,Robotics,Siemens,Mid,Automation,High,Medium,AI Automation,70000
+AI Trainer,B.Tech AI,ML Training,Data Labeling,Python,Entry,AI,High,Low,Advanced AI,50000
+Hardware Engineer,B.E ECE,Circuit Design,PCB,Altium,Mid,Hardware,High,Medium,AI Hardware,70000
+EV Consultant,MBA,Consulting,Analysis,Excel,Senior,Business,High,Low,AI Strategy,90000
+Startup Founder,Any,Business,Innovation,None,Senior,Startup,High,Low,Scaling,0
+Research Intern,B.E/M.Tech,Research,Analysis,Tools,Entry,R&D,High,Low,Deep Tech,20000
+,,,,,,,,,,
+EV Design Engineer,B.E Mechanical,CAD,Design,ANSYS,Entry,EV Design,High,Low,AI Design,42000
+Battery Engineer,B.E Electrical,Battery Mgmt,BMS,MATLAB,Mid,Battery,Very High,Low,AI Battery,60000
+Embedded Engineer,B.E ECE,Embedded C,Microcontrollers,Keil,Mid,Automation,High,Medium,Edge AI,55000
+Robotics Engineer,B.E Mechatronics,Robotics,Automation,ROS,Mid,Automation,High,Medium,AI Robotics,75000
+AI Engineer,B.Tech AI,Deep Learning,Python,TensorFlow,Senior,AI EV,Very High,Low,Advanced AI,100000
+Data Analyst,B.Sc Data Science,SQL,Visualization,Power BI,Entry,Analytics,High,Low,AI Data,52000
+Charging Engineer,B.E Electrical,Grid Systems,Power,MATLAB,Mid,Infra,Very High,Low,Smart Grid,68000
+IoT Engineer,B.E CSE,Sensors,Cloud,AWS,Mid,Connected,High,Medium,Edge AI,67000
+Production Engineer,B.E Mechanical,Lean,Automation,SAP,Mid,Manufacturing,High,Medium,Industry 4.0,62000
+Quality Engineer,B.E Mechanical,Inspection,Quality Tools,SPC,Mid,Manufacturing,Medium,Medium,AI QC,57000
+Software Developer,B.Tech CSE,Coding,Python,VS Code,Mid,Software,Very High,Low,Autonomous Systems,82000
+Energy Specialist,M.Tech Energy,Energy Storage,Battery,MATLAB,Senior,Energy,Very High,Low,Next Gen Tech,92000
+Motor Engineer,B.E Electrical,Motor Design,Simulation,ANSYS,Mid,EV Motors,High,Low,AI Motor,66000
+Control Engineer,B.E EEE,Control Systems,PID,MATLAB,Mid,Automation,High,Low,AI Control,76000
+Thermal Engineer,B.E Mechanical,Heat Transfer,Thermal,ANSYS,Mid,Design,High,Low,AI Thermal,71000
+Firmware Engineer,B.E ECE,Firmware,C,Keil,Mid,Embedded,High,Medium,Secure Firmware,66000
+Cybersecurity Engineer,B.Tech CSE,Security,Networking,Kali,Mid,Security,Very High,Low,AI Security,86000
+Cloud Engineer,B.Tech IT,Cloud,DevOps,AWS,Mid,Cloud,High,Medium,AI Cloud,76000
+Test Engineer,B.E Mechanical,Testing,Validation,LabVIEW,Entry,QA,Medium,Medium,Automation Testing,46000
+Field Engineer,Diploma,Maintenance,Repair,Tools,Entry,Service,High,Low,Remote Systems,36000
+EV Sales Engineer,MBA,Sales,CRM,Tools,Entry,Sales,High,Medium,AI Sales,51000
+Battery Researcher,M.Tech,Research,Electrochemistry,Lab,Senior,R&D,Very High,Low,Next Gen Battery,105000
+AI Scientist,B.Tech AI,AI Models,Data,Python,Senior,AI,Very High,Low,Advanced AI,115000
+Simulation Engineer,B.E Mechanical,Simulation,Modeling,ANSYS,Mid,Design,High,Low,AI Simulation,72000
+Grid Engineer,B.E Electrical,Grid,Power Flow,ETAP,Mid,Energy,Very High,Low,Smart Grid,82000
+Policy Analyst,MBA,Policy,Research,Excel,Mid,Government,High,Low,AI Policy,72000
+Automation Engineer,B.E Mechatronics,PLC,Automation,Siemens,Mid,Automation,High,Medium,AI Automation,72000
+Hardware Engineer,B.E ECE,PCB,Circuit,Altium,Mid,Hardware,High,Medium,AI Hardware,72000
+EV Consultant,MBA,Consulting,Business,Excel,Senior,Business,High,Low,AI Strategy,92000
+Research Intern,B.E,Research,Analysis,Tools,Entry,R&D,High,Low,Deep Tech,22000
