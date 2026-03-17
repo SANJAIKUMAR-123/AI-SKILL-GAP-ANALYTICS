@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillForge Dashboard</title>
+
+<style>
+body{
+  background:#0a0c0f;
+  color:#fff;
+  font-family:Arial;
+  padding:20px;
+}
+.container{
+  max-width:900px;
+  margin:auto;
+}
+.card{
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+button{
+  padding:10px 20px;
+  background:#e8ff47;
+  border:none;
+  cursor:pointer;
+}
+canvas{
+  display:block;
+  margin:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Upload Resume (Simulated)</h2>
+    <input type="file" id="fileInput"/>
+    <br><br>
+    <button onclick="startAnalysis()">Analyze Resume</button>
+  </div>
+
+  <div class="card">
+    <h2>Radar Chart</h2>
+    <canvas id="radarCanvas" width="300" height="300"></canvas>
+  </div>
+
+</div>
+
+<script>
+
+// ===== SKILLS =====
+const SKILL_DOMAINS = [
+  {id:'bms', target:85},
+  {id:'hv', target:90},
+  {id:'adas', target:80},
+  {id:'therm', target:85},
+  {id:'sdv', target:90},
+  {id:'power', target:80},
+  {id:'charging', target:75}
+];
+
+// ===== FAKE PROFILE =====
+const PROFILE = {
+  scores:{
+    bms:50,
+    hv:60,
+    adas:40,
+    therm:70,
+    sdv:80,
+    power:55,
+    charging:65
+  }
+};
+
+let resumeScores = null;
+
+// ===== ANALYSIS =====
+function startAnalysis(){
+  resumeScores = PROFILE.scores;
+  buildRadar();
+}
+
+// ===== RADAR CHART =====
+function buildRadar(){
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0,0,300,300);
+
+  const cx = 150, cy = 150, r = 120;
+  const n = SKILL_DOMAINS.length;
+
+  function angle(i){
+    return (Math.PI*2/n)*i - Math.PI/2;
+  }
+
+  // GRID
+  ctx.strokeStyle = "#333";
+  for(let lvl=1; lvl<=4; lvl++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const a = angle(i);
+      const x = cx + Math.cos(a)*(r*lvl/4);
+      const y = cy + Math.sin(a)*(r*lvl/4);
+      if(i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  // AXIS
+  ctx.strokeStyle="#444";
+  for(let i=0;i<n;i++){
+    const a = angle(i);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+    ctx.stroke();
+  }
+
+  // DATA
+  ctx.beginPath();
+  ctx.strokeStyle="#e8ff47";
+  ctx.fillStyle="rgba(232,255,71,0.2)";
+
+  SKILL_DOMAINS.forEach((d,i)=>{
+    const val = resumeScores[d.id]/100;
+    const a = angle(i);
+    const x = cx + Math.cos(a)*r*val;
+    const y = cy + Math.sin(a)*r*val;
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+}
+
+</script>
+
+</body>
+</html>
