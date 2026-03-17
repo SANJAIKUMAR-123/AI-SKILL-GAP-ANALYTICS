@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillForge — Resume Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+  /* ─────────────────────────────────────────
+     DESIGN SYSTEM — SkillForge Core Tokens
+  ───────────────────────────────────────── */
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111318;
+    --surface2: #181c23;
+    --border: rgba(255,255,255,0.07);
+    --accent: #e8ff47;
+    --accent2: #00d4ff;
+    --accent3: #ff6b35;
+    --text: #f0f2f5;
+    --muted: #6b7280;
+    --danger: #ff4444;
+    --success: #22c55e;
+    --warn: #f59e0b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* GRID BG */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── LAYOUT ─── */
+  .shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ─────────────────────────────────────────
+     SIDEBAR
+  ───────────────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 0 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo-icon svg { width: 20px; height: 20px; }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  nav { padding: 20px 0; flex: 1; }
+
+  .nav-section { padding: 0 16px 8px; }
+
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 8px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid transparent;
+    margin-bottom: 2px;
+    position: relative;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+
+  .nav-item.active {
+    background: rgba(232,255,71,0.08);
+    color: var(--accent);
+    border-color: rgba(232,255,71,0.15);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -16px; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 20px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: rgba(255,107,53,0.15);
+    color: var(--accent3);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,107,53,0.2);
+  }
+
+  .badge-new {
+    margin-left: auto;
+    background: rgba(232,255,71,0.1);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    border: 1px solid rgba(232,255,71,0.2);
+  }
+
+  .sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-card { display: flex; align-items: center; gap: 10px; }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #000;
+  }
+
+  .user-info { flex: 1; }
+  .user-name { font-size: 12px; color: var(--text); font-weight: 500; }
+  .user-role { font-size: 10px; color: var(--muted); }
+
+  /* ─────────────────────────────────────────
+     MAIN
+  ───────────────────────────────────────── */
+  .main { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .topbar {
+    background: rgba(10,12,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .page-title span { color: var(--accent); }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-accent {
+    background: var(--accent);
+    color: #000;
+    font-weight: 500;
+  }
+
+  .btn-accent:hover { background: #d4eb3c; transform: translateY(-1px); }
+
+  .btn-accent:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ─────────────────────────────────────────
+     CONTENT
+  ───────────────────────────────────────── */
+  .content {
+    padding: 36px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    animation: slideUp 0.5s ease 0.05s forwards;
+    opacity: 0;
+  }
+
+  .page-header-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .page-header h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .page-header p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .card-head {
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .card-meta { font-size: 10px; color: var(--muted); }
+
+  .card-body { padding: 24px 22px; }
+
+  /* ─── UPLOAD ZONE ─── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 52px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    text-align: center;
+    background: var(--surface2);
+  }
+
+  .upload-zone:hover,
+  .upload-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(232,255,71,0.04);
+    box-shadow: 0 0 40px rgba(232,255,71,0.06) inset;
+  }
+
+  .upload-zone.dragover .upload-icon-ring { transform: scale(1.08); }
+
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon-ring {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .upload-icon-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px dashed rgba(232,255,71,0.2);
+    animation: rotateDash 12s linear infinite;
+  }
+
+  @keyframes rotateDash {
+    to { transform: rotate(360deg); }
+  }
+
+  .upload-icon-ring svg {
+    width: 28px; height: 28px;
+    color: var(--accent);
+  }
+
+  .upload-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .upload-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .upload-subtitle strong { color: var(--accent); }
+
+  .upload-formats {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .fmt-pill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── FILE PREVIEW ─── */
+  .file-preview {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--surface2);
+    border: 1px solid rgba(232,255,71,0.15);
+    border-radius: 10px;
+    animation: slideUp 0.3s ease forwards;
+  }
+
+  .file-preview.visible { display: flex; }
+
+  .file-icon-box {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: rgba(232,255,71,0.08);
+    border: 1px solid rgba(232,255,71,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .file-info { flex: 1; min-width: 0; }
+
+  .file-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+
+  .file-size { font-size: 10px; color: var(--muted); }
+
+  .file-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--success);
+    margin-top: 4px;
+  }
+
+  .file-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+  }
+
+  .file-remove {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: rgba(255,68,68,0.08);
+    border: 1px solid rgba(255,68,68,0.15);
+    color: var(--danger);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .file-remove:hover { background: rgba(255,68,68,0.18); }
+
+  /* ─── FORM ─── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-label .required { color: var(--accent); margin-left: 2px; }
+
+  .form-input, .form-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    appearance: none;
+  }
+
+  .form-input::placeholder { color: var(--muted); }
+
+  .form-input:focus, .form-select:focus {
+    border-color: rgba(232,255,71,0.4);
+    box-shadow: 0 0 0 3px rgba(232,255,71,0.06);
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .form-select option { background: var(--surface2); color: var(--text); }
+
+  /* ─── TAGS INPUT ─── */
+  .tags-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+    cursor: text;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .tags-wrap:focus-within {
+    border-color: rgba(232,255,71,0.4);
+    box-shadow: 0 0 0 3px rgba(232,255,71,0.06);
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px 3px 10px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--accent2);
+    cursor: default;
+    animation: fadeIn 0.2s ease forwards;
+  }
+
+  .tag-chip button {
+    background: none;
+    border: none;
+    color: var(--accent2);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    display: flex; align-items: center;
+  }
+
+  .tag-chip button:hover { opacity: 1; }
+
+  .tags-input-inner {
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    flex: 1;
+    min-width: 120px;
+    padding: 2px 4px;
+  }
+
+  .tags-input-inner::placeholder { color: var(--muted); }
+
+  /* ─── UPLOAD PROGRESS ─── */
+  .upload-progress-wrap {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .upload-progress-wrap.visible { display: flex; }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  .progress-label { color: var(--text); }
+  .progress-pct { color: var(--accent); font-weight: 600; font-family: 'Syne', sans-serif; }
+
+  .progress-track {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 1.4s infinite;
+  }
+
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  .progress-steps {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+
+  .progress-step.done { color: var(--success); }
+  .progress-step.active { color: var(--accent2); }
+
+  .step-icon {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+
+  .progress-step.done .step-icon { background: var(--success); border-color: var(--success); color: #000; }
+  .progress-step.active .step-icon { border-color: var(--accent2); animation: pulse2 1.5s infinite; }
+
+  @keyframes pulse2 {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(0,212,255,0); }
+  }
+
+  /* ─── SUCCESS STATE ─── */
+  .success-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 32px 20px;
+    animation: slideUp 0.4s ease forwards;
+  }
+
+  .success-state.visible { display: flex; }
+
+  .success-ring {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.1);
+    border: 2px solid var(--success);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 0 30px rgba(34,197,94,0.2);
+  }
+
+  .success-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .success-sub { font-size: 12px; color: var(--muted); line-height: 1.7; max-width: 380px; }
+
+  .success-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .success-tag {
+    padding: 4px 10px;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--success);
+  }
+
+  .success-actions { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
+
+  /* ─── TIPS ─── */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .tip-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .tip-block:hover { border-color: rgba(232,255,71,0.2); }
+
+  .tip-icon { font-size: 20px; margin-bottom: 8px; }
+
+  .tip-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  .tip-body { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+  /* ─── HISTORY ─── */
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .history-item:hover { border-color: rgba(255,255,255,0.12); }
+
+  .history-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .history-icon.pdf { background: rgba(255,68,68,0.1); }
+  .history-icon.docx { background: rgba(0,212,255,0.1); }
+
+  .history-info { flex: 1; min-width: 0; }
+
+  .history-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+
+  .history-meta { font-size: 10px; color: var(--muted); }
+
+  .history-badge {
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .hb-processed { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+  .hb-analyzing { background: rgba(0,212,255,0.1); color: var(--accent2); border: 1px solid rgba(0,212,255,0.2); }
+  .hb-pending { background: rgba(245,158,11,0.1); color: var(--warn); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .card { animation: slideUp 0.45s ease forwards; opacity: 0; }
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.18s; }
+  .card:nth-child(3) { animation-delay: 0.26s; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <a class="logo-mark" href="#">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text">SkillForge</div>
+          <div class="logo-sub">EV & Auto Analytics</div>
+        </div>
+      </a>
+    </div>
+
+    <nav>
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Dashboard
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Gap Analysis
+          <span class="badge">12</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Workforce Map
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">EV Transition</div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Readiness Index
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Battery Systems
+          <span class="badge">3</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Powertrain Shift
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          ADAS & Software
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Programs</div>
+        <div class="nav-item active">
+          <div class="nav-dot"></div>
+          Resume Upload
+          <span class="badge-new">New</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Upskilling Paths
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Cohort Tracker
+        </div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          ROI Reports
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Configure</div>
+        <div class="nav-item">
+          <div class="nav-dot"></div>
+          Settings
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">AK</div>
+        <div class="user-info">
+          <div class="user-name">Arjun Kumar</div>
+          <div class="user-role">Workforce Analyst</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title">Resume <span>Upload</span></div>
+      <div style="font-size:11px;color:var(--muted);margin-left:4px;">— Workforce Skills Intake</div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost" onclick="resetAll()">↺ Reset</button>
+        <button class="btn btn-accent" id="analyzeBtn" disabled onclick="startAnalysis()">Analyze Resume →</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div class="page-header-eyebrow">// workforce intake module</div>
+        <h1>Upload <em>Employee Resume</em><br>for Skill Extraction</h1>
+        <p>Upload a resume to automatically extract skills, identify EV readiness gaps, and generate a personalised upskilling roadmap aligned to automotive manufacturing targets.</p>
+      </div>
+
+      <!-- ── UPLOAD CARD ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Resume Document</div>
+          <div class="card-meta">PDF, DOCX, or TXT · Max 10 MB</div>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Drop Zone -->
+          <div class="upload-zone" id="dropZone">
+            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" />
+            <div class="upload-icon-ring">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div class="upload-title">Drop resume here or click to browse</div>
+            <div class="upload-subtitle">
+              Drag & drop your file, or <strong>click to select</strong> from your computer
+            </div>
+            <div class="upload-formats">
+              <span class="fmt-pill">PDF</span>
+              <span class="fmt-pill">DOCX</span>
+              <span class="fmt-pill">TXT</span>
+            </div>
+          </div>
+
+          <!-- File Preview -->
+          <div class="file-preview" id="filePreview">
+            <div class="file-icon-box" id="fileIconBox">📄</div>
+            <div class="file-info">
+              <div class="file-name" id="fileName">resume.pdf</div>
+              <div class="file-size" id="fileSize">—</div>
+              <div class="file-status">
+                <div class="file-status-dot"></div>
+                Ready for analysis
+              </div>
+            </div>
+            <div class="file-remove" onclick="removeFile()" title="Remove file">✕</div>
+          </div>
+
+          <!-- Upload Progress -->
+          <div class="upload-progress-wrap" id="progressWrap">
+            <div class="progress-header">
+              <span class="progress-label" id="progressLabel">Uploading…</span>
+              <span class="progress-pct" id="progressPct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-steps">
+              <div class="progress-step" id="step1"><div class="step-icon">1</div> Uploading</div>
+              <div class="progress-step" id="step2"><div class="step-icon">2</div> Parsing</div>
+              <div class="progress-step" id="step3"><div class="step-icon">3</div> Extracting Skills</div>
+              <div class="progress-step" id="step4"><div class="step-icon">4</div> Mapping Gaps</div>
+              <div class="progress-step" id="step5"><div class="step-icon">✓</div> Complete</div>
+            </div>
+          </div>
+
+          <!-- Success State -->
+          <div class="success-state" id="successState">
+            <div class="success-ring">✓</div>
+            <div class="success-title">Resume Analyzed!</div>
+            <div class="success-sub">Skills extracted and mapped against EV & automotive competency frameworks. Gap report is ready for review.</div>
+            <div class="success-tags">
+              <span class="success-tag">⚡ 14 Skills Extracted</span>
+              <span class="success-tag">🔋 3 EV Gaps Found</span>
+              <span class="success-tag">📋 Roadmap Generated</span>
+              <span class="success-tag">🎯 Proficiency: 64/100</span>
+            </div>
+            <div class="success-actions">
+              <button class="btn btn-accent" onclick="viewReport()">View Gap Report →</button>
+              <button class="btn btn-ghost" onclick="resetAll()">Upload Another</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── METADATA CARD ── -->
+      <div class="card" id="metaCard">
+        <div class="card-head">
+          <div class="card-title">Employee Details</div>
+          <div class="card-meta">Optional — helps contextualise the analysis</div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label class="form-label">Full Name <span class="required">*</span></label>
+              <input class="form-input" type="text" placeholder="e.g. Priya Nair" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Employee ID</label>
+              <input class="form-input" type="text" placeholder="e.g. EMP-20841" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Department <span class="required">*</span></label>
+              <select class="form-select">
+                <option value="" disabled selected>Select department…</option>
+                <option>Battery Cell Assembly</option>
+                <option>Power Electronics</option>
+                <option>ADAS Engineering</option>
+                <option>Thermal Management</option>
+                <option>Software-Defined Vehicles</option>
+                <option>Chassis & Suspension</option>
+                <option>Quality & Compliance</option>
+                <option>R&D / Innovation</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Role</label>
+              <select class="form-select">
+                <option value="" disabled selected>Select role…</option>
+                <option>Technician — Level 1</option>
+                <option>Technician — Level 2</option>
+                <option>Senior Technician</option>
+                <option>Engineer</option>
+                <option>Senior Engineer</option>
+                <option>Team Lead</option>
+                <option>Manager</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Plant / Site</label>
+              <select class="form-select">
+                <option value="" disabled selected>Select plant…</option>
+                <option>Plant A — Chennai</option>
+                <option>Plant B — Pune</option>
+                <option>Plant C — Gurugram</option>
+                <option>Plant D — Bengaluru</option>
+                <option>Remote / HQ</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Years of Experience</label>
+              <input class="form-input" type="number" placeholder="e.g. 6" min="0" max="50" />
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Target Skills to Assess</label>
+              <div class="tags-wrap" id="tagsWrap" onclick="document.getElementById('tagInput').focus()">
+                <!-- chips injected here -->
+                <input class="tags-input-inner" id="tagInput" placeholder="Type a skill and press Enter…" />
+              </div>
+              <div style="font-size:10px;color:var(--muted);margin-top:4px;">Suggestions: Battery BMS · High-Voltage Safety · ADAS · OTA Updates · Power Electronics · Thermal Mgmt</div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Analysis Priority</label>
+              <div style="display:flex;gap:10px;">
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--muted);padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;flex:1;transition:all 0.2s;" id="pri1" onclick="selectPriority(this)">
+                  <span style="font-size:14px;">⚡</span> EV Readiness
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--muted);padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;flex:1;transition:all 0.2s;" id="pri2" onclick="selectPriority(this)">
+                  <span style="font-size:14px;">🔧</span> Full Skill Map
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--muted);padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;flex:1;transition:all 0.2s;" id="pri3" onclick="selectPriority(this)">
+                  <span style="font-size:14px;">🎯</span> Gap Only
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TIPS CARD ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Resume Tips for Better Analysis</div>
+          <div class="card-meta">Improve extraction accuracy</div>
+        </div>
+        <div class="card-body">
+          <div class="tips-grid">
+            <div class="tip-block">
+              <div class="tip-icon">📋</div>
+              <div class="tip-title">Include a Skills Section</div>
+              <div class="tip-body">List technical skills explicitly — BMS, CAN bus, AUTOSAR, HV safety certifications. Acronyms help our parser.</div>
+            </div>
+            <div class="tip-block">
+              <div class="tip-icon">🔢</div>
+              <div class="tip-title">Quantify Experience</div>
+              <div class="tip-body">Phrases like "3 years BMS calibration" or "certified HV technician since 2022" improve proficiency scoring.</div>
+            </div>
+            <div class="tip-block">
+              <div class="tip-icon">📄</div>
+              <div class="tip-title">Use PDF or DOCX</div>
+              <div class="tip-body">Machine-readable formats extract up to 40% more skill entities vs scanned image PDFs.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RECENT UPLOADS ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Recent Uploads</div>
+          <div class="card-meta">This session</div>
+        </div>
+        <div class="card-body">
+          <div class="history-list">
+            <div class="history-item">
+              <div class="history-icon pdf">📕</div>
+              <div class="history-info">
+                <div class="history-name">priya_nair_resume_2025.pdf</div>
+                <div class="history-meta">Battery Cell Assembly · 2 hours ago · 248 KB</div>
+              </div>
+              <span class="history-badge hb-processed">● Processed</span>
+            </div>
+            <div class="history-item">
+              <div class="history-icon docx">📘</div>
+              <div class="history-info">
+                <div class="history-name">ravi_shankar_cv.docx</div>
+                <div class="history-meta">Power Electronics · 5 hours ago · 184 KB</div>
+              </div>
+              <span class="history-badge hb-processed">● Processed</span>
+            </div>
+            <div class="history-item">
+              <div class="history-icon pdf">📕</div>
+              <div class="history-info">
+                <div class="history-name">meena_krishnamurthy_cv.pdf</div>
+                <div class="history-meta">ADAS Engineering · Yesterday · 312 KB</div>
+              </div>
+              <span class="history-badge hb-analyzing">◌ Analyzing</span>
+            </div>
+            <div class="history-item">
+              <div class="history-icon docx">📘</div>
+              <div class="history-info">
+                <div class="history-name">siddharth_rao_resume.docx</div>
+                <div class="history-meta">Thermal Management · Yesterday · 197 KB</div>
+              </div>
+              <span class="history-badge hb-pending">— Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script>
+/* ─── FILE INPUT ─── */
+const dropZone   = document.getElementById('dropZone');
+const fileInput  = document.getElementById('fileInput');
+const filePreview= document.getElementById('filePreview');
+const analyzeBtn = document.getElementById('analyzeBtn');
+let selectedFile = null;
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024*1024)).toFixed(2) + ' MB';
+}
+
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (ext === 'pdf')  return '📕';
+  if (ext === 'docx' || ext === 'doc') return '📘';
+  return '📄';
+}
+
+function showFile(file) {
+  selectedFile = file;
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent  = formatBytes(file.size);
+  document.getElementById('fileIconBox').textContent = getFileIcon(file.name);
+  filePreview.classList.add('visible');
+  dropZone.style.display = 'none';
+  analyzeBtn.disabled = false;
+}
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) showFile(e.target.files[0]);
+});
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) showFile(file);
+});
+
+function removeFile() {
+  selectedFile = null;
+  fileInput.value = '';
+  filePreview.classList.remove('visible');
+  dropZone.style.display = 'flex';
+  analyzeBtn.disabled = true;
+  document.getElementById('progressWrap').classList.remove('visible');
+  document.getElementById('successState').classList.remove('visible');
+}
+
+function resetAll() {
+  removeFile();
+  document.getElementById('successState').classList.remove('visible');
+  document.querySelectorAll('.progress-step').forEach(s => {
+    s.classList.remove('done','active');
+  });
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressPct').textContent = '0%';
+}
+
+/* ─── ANALYSIS SIMULATION ─── */
+function startAnalysis() {
+  if (!selectedFile) return;
+  analyzeBtn.disabled = true;
+
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar  = document.getElementById('progressBar');
+  const progressPct  = document.getElementById('progressPct');
+  const progressLabel= document.getElementById('progressLabel');
+  const successState = document.getElementById('successState');
+
+  progressWrap.classList.add('visible');
+
+  const stages = [
+    { pct: 20,  label: 'Uploading file…',       step: 'step1' },
+    { pct: 42,  label: 'Parsing document…',      step: 'step2' },
+    { pct: 65,  label: 'Extracting skills…',     step: 'step3' },
+    { pct: 85,  label: 'Mapping EV gaps…',       step: 'step4' },
+    { pct: 100, label: 'Finalising report…',     step: 'step5' },
+  ];
+
+  let i = 0;
+  function runStage() {
+    if (i >= stages.length) {
+      setTimeout(() => {
+        progressWrap.classList.remove('visible');
+        filePreview.classList.remove('visible');
+        successState.classList.add('visible');
+      }, 500);
+      return;
+    }
+
+    const s = stages[i];
+
+    // Mark previous done
+    if (i > 0) {
+      document.getElementById(stages[i-1].step).classList.remove('active');
+      document.getElementById(stages[i-1].step).classList.add('done');
+      document.getElementById(stages[i-1].step).querySelector('.step-icon').textContent = '✓';
+    }
+
+    document.getElementById(s.step).classList.add('active');
+    progressLabel.textContent = s.label;
+    progressBar.style.width = s.pct + '%';
+    progressPct.textContent  = s.pct + '%';
+
+    i++;
+    setTimeout(runStage, i === stages.length ? 600 : 900);
+  }
+
+  setTimeout(runStage, 200);
+}
+
+function viewReport() {
+  alert('Gap report view coming soon — wire this to your analytics route!');
+}
+
+/* ─── PRIORITY SELECTOR ─── */
+function selectPriority(el) {
+  document.querySelectorAll('[id^="pri"]').forEach(p => {
+    p.style.borderColor = 'var(--border)';
+    p.style.color = 'var(--muted)';
+    p.style.background = 'var(--surface2)';
+  });
+  el.style.borderColor = 'rgba(232,255,71,0.4)';
+  el.style.color = 'var(--accent)';
+  el.style.background = 'rgba(232,255,71,0.06)';
+}
+
+/* ─── TAGS INPUT ─── */
+const tagInput = document.getElementById('tagInput');
+const tagsWrap = document.getElementById('tagsWrap');
+let tags = [];
+
+tagInput.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ',') && tagInput.value.trim()) {
+    e.preventDefault();
+    addTag(tagInput.value.trim().replace(/,/g,''));
+    tagInput.value = '';
+  }
+  if (e.key === 'Backspace' && !tagInput.value && tags.length) {
+    removeTag(tags[tags.length - 1]);
+  }
+});
+
+function addTag(val) {
+  if (!val || tags.includes(val)) return;
+  tags.push(val);
+  const chip = document.createElement('span');
+  chip.className = 'tag-chip';
+  chip.dataset.tag = val;
+  chip.innerHTML = `${val}<button onclick="removeTag('${val}')" title="Remove">×</button>`;
+  tagsWrap.insertBefore(chip, tagInput);
+}
+
+function removeTag(val) {
+  tags = tags.filter(t => t !== val);
+  const chip = tagsWrap.querySelector(`[data-tag="${val}"]`);
+  if (chip) chip.remove();
+}
+
+/* ─── NAV ─── */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
